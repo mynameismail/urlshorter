@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 // Profile struct
@@ -12,7 +14,7 @@ type Profile struct {
 	Hobbies []string `json:"hobbies"`
 }
 
-func middleware(next echo.HandlerFunc) echo.HandlerFunc {
+func customMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if age := c.QueryParam("age"); age == "" {
 			return c.String(http.StatusBadRequest, "Missing parameter age")
@@ -31,9 +33,12 @@ func hello(c echo.Context) error {
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "[${time_rfc3339_nano}] ${remote_ip} ${method} ${uri} ${status} ${user_agent}\n",
+	}))
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello World!")
 	})
-	e.GET("/hello/:name", middleware(hello))
+	e.GET("/hello/:name", customMiddleware(hello))
 	e.Logger.Fatal(e.Start(":1323"))
 }
