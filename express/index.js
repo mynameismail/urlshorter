@@ -31,14 +31,13 @@ app.use(helmet())
 
 // middlewares
 const basicAuth = (req, res, next) => {
-  let authorization = (req.headers.authorization || '').split(' ')
-  if (authorization[0] && authorization[0] == 'Basic') {
-    let b64auth = authorization[1] || ''
-    if (b64auth) {
-      let [user, pass] = Buffer.from(b64auth, 'base64').toString().split(':')
-      if (user == process.env.APP_USER && pass == process.env.APP_PASS) {
-        return next()
-      }
+  const regexBasicAuth = /^Basic\s/
+  let authorization = req.headers.authorization || ''
+  let b64auth = authorization.match(regexBasicAuth) ? authorization.replace(regexBasicAuth, '') : ''
+  if (b64auth) {
+    let [user, pass] = Buffer.from(b64auth, 'base64').toString().split(':')
+    if (user == process.env.APP_USER && pass == process.env.APP_PASS) {
+      return next()
     }
   }
 
