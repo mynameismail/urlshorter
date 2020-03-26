@@ -9,84 +9,104 @@ controllers.login = (req, res) => {
   if (username == process.env.APP_USERNAME && password == process.env.APP_PASSWORD) {
     return res.status(200).send('Correct login')
   }
-  
+
   return res.status(401).send('Wrong login')
 }
 
-controllers.list = (req, res) => {
-  Url.findAll()
-  .then(urls => {
+controllers.list = async (req, res) => {
+  try {
+    let urls = await Url.findAll()
     return res.status(200).send({
       data: urls,
       message: 'Success'
     })
-  })
-  .catch(() => res.status(500).send('Error'))
+  } catch (error) {
+    console.log(error)
+  }
+
+  return res.status(500).send('Error')
 }
 
-controllers.store = (req, res) => {
+controllers.store = async (req, res) => {
   let name = req.body.name || 'New URL'
   let real_url = req.body.real_url
   if (!real_url) {
     return res.status(400).send('Bad request')
   }
 
-  Url.create({
-    name: name,
-    real_url: real_url
-  })
-  .then(() => res.status(200).send('Success'))
-  .catch(() => res.status(500).send('Error'))
+  try {
+    let success = await Url.create({
+      name: name,
+      real_url: real_url
+    })
+    if (success) {
+      return res.status(200).send('Success')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+
+  return res.status(500).send('Error')
 }
 
-controllers.update = (req, res) => {
+controllers.update = async (req, res) => {
   let id = req.params.id
-  if (!parseInt(id)) {
+  let name = req.body.name
+  let real_url = req.body.real_url
+  if (!parseInt(id) || !real_url) {
     return res.status(400).send('Bad request')
   }
-  Url.findOne({ where: { id: id } })
-  .then(url => {
+
+  try {
+    let url = await Url.findOne({ where: { id: id } })
     if (url) {
-      let name = req.body.name
-      let real_url = req.body.real_url
-      if (!real_url) {
-        return res.status(400).send('Bad request')
-      }
       url.name = name
       url.real_url = real_url
-      url.save()
-      .then(() => res.status(200).send('Success'))
+      let success = await url.save()
+      if (success) {
+        return res.status(200).send('Success')
+      }
     } else {
       return res.status(404).send('Not found')
     }
-  })
-  .catch(() => res.status(500).send('Error'))
+  } catch (error) {
+    console.log(error)
+  }
+
+  return res.status(500).send('Error')
 }
 
-controllers.delete = (req, res) => {
+controllers.delete = async (req, res) => {
   let id = req.params.id
   if (!parseInt(id)) {
     return res.status(400).send('Bad request')
   }
-  Url.findOne({ where: { id: id } })
-  .then(url => {
+
+  try {
+    let url = await Url.findOne({ where: { id: id } })
     if (url) {
-      url.destroy()
-      .then(() => res.status(200).send('Success'))
+      let success = await url.destroy()
+      if (success) {
+        return res.status(200).send('Success')
+      }
     } else {
       return res.status(404).send('Not found')
     }
-  })
-  .catch(() => res.status(500).send('Error'))
+  } catch (error) {
+    console.log(error)
+  }
+
+  return res.status(500).send('Error')
 }
 
-controllers.visit = (req, res) => {
+controllers.visit = async (req, res) => {
   let id = req.params.id
   if (!parseInt(id)) {
     return res.status(400).send('Bad request')
   }
-  Url.findOne({ where: { id: id } })
-  .then(url => {
+
+  try {
+    let url = await Url.findOne({ where: { id: id } })
     if (url) {
       url.visited = url.visited + 1
       url.save()
@@ -94,8 +114,11 @@ controllers.visit = (req, res) => {
     } else {
       return res.status(404).send('Not found')
     }
-  })
-  .catch(() => res.status(500).send('Error'))
+  } catch (error) {
+    console.log(error)
+  }
+
+  return res.status(500).send('Error')
 }
 
 module.exports = controllers
