@@ -8,9 +8,10 @@ from models import db, Url
 env_path = Path(os.path.dirname(__file__) + '/../.env').resolve()
 load_dotenv(dotenv_path=env_path)
 
-sqlite_path = Path(os.path.dirname(__file__) + '/../urlshorter.db').resolve()
 app = Flask(__name__, static_folder='ui', static_url_path='/')
-app.config['DEBUG'] = True
+sqlite_path = Path(os.path.dirname(__file__) + '/../urlshorter.db').resolve()
+app.config['DEBUG'] = os.getenv('APP_ENV') == 'development'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + str(sqlite_path)
 
 db.init_app(app)
@@ -86,10 +87,13 @@ def update_url(id):
 
     try:
         url = Url.query.get(id)
-        url.name = name
-        url.real_url = real_url
-        db.session.commit()
-        return 'Success', 200
+        if url:
+            url.name = name
+            url.real_url = real_url
+            db.session.commit()
+            return 'Success', 200
+        else:
+            return 'Not found', 404
     except:
         pass
 
@@ -100,9 +104,12 @@ def update_url(id):
 def delete_url(id):
     try:
         url = Url.query.get(id)
-        db.session.delete(url)
-        db.session.commit()
-        return 'Success', 200
+        if url:
+            db.session.delete(url)
+            db.session.commit()
+            return 'Success', 200
+        else:
+            return 'Not found', 404
     except:
         pass
 
@@ -112,9 +119,12 @@ def delete_url(id):
 def visit_url(id):
     try:
         url = Url.query.get(id)
-        url.visited = url.visited + 1
-        db.session.commit()
-        return redirect(url.real_url)
+        if url:
+            url.visited = url.visited + 1
+            db.session.commit()
+            return redirect(url.real_url)
+        else:
+            return 'Not found', 404
     except:
         pass
 
