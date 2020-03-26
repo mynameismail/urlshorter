@@ -1,5 +1,6 @@
 urlshorter.db
 node_modules
+__pycache__
 venv
 env
 .env
