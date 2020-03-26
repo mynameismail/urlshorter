@@ -1,0 +1,5 @@
+urlshorter.db
+node_modules
+venv
+env
+.env
