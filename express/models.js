@@ -2,11 +2,18 @@ var path = require('path')
 var { Sequelize, DataTypes } = require('sequelize')
 var sequelize = new Sequelize('sqlite:' + path.resolve(__dirname + '/../urlshorter.db'))
 
-const Url = sequelize.define('url', {
-  name: DataTypes.STRING,
-  real_url: DataTypes.STRING,
-  visited: { type: DataTypes.INTEGER, defaultValue: 0 }
-})
+const Url = sequelize.define('url',
+  {
+    name: DataTypes.STRING,
+    real_url: DataTypes.STRING,
+    visited: { type: DataTypes.INTEGER, defaultValue: 0 },
+  },
+  {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    tableName: 'urls'
+  }
+)
 
 sequelize.sync()
 .then(async () => {
