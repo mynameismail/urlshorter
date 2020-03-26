@@ -35,8 +35,8 @@ const basicAuth = (req, res, next) => {
   let authorization = req.headers.authorization || ''
   let b64auth = authorization.match(regexBasicAuth) ? authorization.replace(regexBasicAuth, '') : ''
   if (b64auth) {
-    let [user, pass] = Buffer.from(b64auth, 'base64').toString().split(':')
-    if (user == process.env.APP_USER && pass == process.env.APP_PASS) {
+    let [username, password] = Buffer.from(b64auth, 'base64').toString().split(':')
+    if (username == process.env.APP_USERNAME && password == process.env.APP_PASSWORD) {
       return next()
     }
   }
