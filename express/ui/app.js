@@ -1,25 +1,14 @@
-'use strict'
+const routes = [
+  { path: '/', component: Home },
+  { path: '/login', component: Login }
+]
 
-const e = React.createElement
+const router = new VueRouter({
+  mode: 'history',
+  base: '/app',
+  routes: routes
+})
 
-class HelloButton extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { liked: false }
-  }
-
-  render() {
-    if (this.state.liked) {
-      return 'Hello from Urlshorter'
-    }
-
-    return e(
-      'button',
-      { onClick: () => this.setState({ liked: true }) },
-      'Hello'
-    )
-  }
-}
-
-const appContainer = document.querySelector('#app')
-ReactDOM.render(e(HelloButton), appContainer)
+const app = new Vue({
+  router
+}).$mount('#app')
