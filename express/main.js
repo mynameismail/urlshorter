@@ -1,7 +1,7 @@
 // load env
 var path = require('path')
 require('dotenv').config({
-  path: path.resolve(__dirname + '/../.env')
+    path: path.resolve(__dirname + '/../.env')
 })
 
 // import packages
@@ -31,17 +31,17 @@ app.use(helmet())
 
 // middlewares
 const basicAuth = (req, res, next) => {
-  const regexBasicAuth = /^Basic\s/
-  let authorization = req.headers.authorization || ''
-  let b64auth = authorization.match(regexBasicAuth) ? authorization.replace(regexBasicAuth, '') : ''
-  if (b64auth) {
-    let [username, password] = Buffer.from(b64auth, 'base64').toString().split(':')
-    if (username == process.env.APP_USERNAME && password == process.env.APP_PASSWORD) {
-      return next()
+    const regexBasicAuth = /^Basic\s/
+    let authorization = req.headers.authorization || ''
+    let b64auth = authorization.match(regexBasicAuth) ? authorization.replace(regexBasicAuth, '') : ''
+    if (b64auth) {
+        let [username, password] = Buffer.from(b64auth, 'base64').toString().split(':')
+        if (username == process.env.APP_USERNAME && password == process.env.APP_PASSWORD) {
+            return next()
+        }
     }
-  }
 
-  return res.status(401).send('Unauthorized')
+    return res.status(401).send('Unauthorized')
 }
 
 // routes

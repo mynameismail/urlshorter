@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__, static_folder='ui', static_url_path='/')
 sqlite_path = Path(os.path.dirname(__file__) + '/../urlshorter.db').resolve()
-app.config['DEBUG'] = os.getenv('APP_ENV') == 'development'
+app.config['DEBUG'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + str(sqlite_path)
 
