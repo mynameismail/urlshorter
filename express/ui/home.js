@@ -1,21 +1,13 @@
 const Home = {
-  template: `
-    <div id="home">
-      <span v-if="message">{{ message }}</span>
-      <ul class="collection with-header">
-        <li class="collection-header"><h4>List url</h4></li>
-        <li class="collection-item" v-for="url in urls" :key="url.id">
-          <div>
-            <span class="badge">visited: {{ url.visited }}</span> {{ url.name }}
-            <a :href="url.real_url" class="secondary-content"><i class="material-icons">send</i></a>
-          </div>
-        </li>
-      </ul>
-    </div>
-  `,
+  template: '#home-page',
   data: () => ({
-    message: '',
-    urls: []
+    message: {
+      type: '',
+      text: ''
+    },
+    search: '',
+    urls: [],
+    filteredUrls: []
   }),
   methods: {
     fetchUrls: async function() {
@@ -28,14 +20,23 @@ const Home = {
       if (response.status == 200) {
         let data = await response.json()
         this.urls = data.data
+        this.filteredUrls = data.data
       } else if (response.status == 401) {
         this.$router.push('/login')
       } else {
         this.message = 'Something error'
       }
+    },
+    doSearch: function() {
+      this.filteredUrls = this.urls.filter(url => url.name.includes(this.search) || url.real_url.includes(this.search))
     }
   },
   mounted() {
     this.fetchUrls()
+
+    var elem = document.querySelector('.collapsible.expandable')
+    var instance = M.Collapsible.init(elem, {
+      accordion: false
+    })
   }
 }

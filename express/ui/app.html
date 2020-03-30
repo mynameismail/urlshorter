@@ -17,8 +17,75 @@
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 
+  <script type="text/x-template" id="login-page">
+    <div id="login">
+      <h4 class="center-align">Login</h4>
+      <form @submit.prevent="doLogin">
+        <div class="input-field">
+          <input
+            id="username"
+            type="text"
+            v-model="username">
+          <label for="username">Username</label>
+        </div>
+        <div class="input-field">
+          <input
+            id="password"
+            type="password"
+            v-model="password">
+          <label for="password">Password</label>
+        </div>
+        <div class="row">
+          <div class="col s8">
+            <div
+              class="message-text"
+              :class="message.type == 'error' ? 'red-text darken-1' : 'green-text darken-1'"
+              v-if="message.text"
+            >{{ message.text }}</div>
+          </div>
+          <div class="col s4 right-align">
+            <button class="btn waves-effect waves-light" type="submit">
+              Login
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </script>
   <script type="text/javascript" src="/login.js"></script>
+
+  <script type="text/x-template" id="home-page">
+    <div id="home">
+      <h4 class="center-align">Urlshorter</h4>
+      <div class="input-field">
+        <input
+          id="search"
+          type="text"
+          v-model="search"
+          @keyup="doSearch">
+        <label for="search">Search</label>
+      </div>
+      <div
+        class="message-text"
+        :class="message.type == 'error' ? 'red-text darken-1' : 'green-text darken-1'"
+        v-if="message.text"
+      >{{ message.text }}</div>
+      <ul class="collapsible expandable">
+        <li v-for="url in filteredUrls" :key="url.id">
+          <div class="collapsible-header">
+            {{ url.name }}
+            <span class="badge" data-badge-caption="hits"><b>{{ url.visited }}</b></span>
+          </div>
+          <div class="collapsible-body">
+            <div><b>Real URL</b></div>
+            <div><a :href="'/' + url.short_id" target="_blank">{{ url.real_url }}</a></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </script>
   <script type="text/javascript" src="/home.js"></script>
+
   <script type="text/javascript" src="/app.js"></script>
 </body>
 </html>

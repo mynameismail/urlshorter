@@ -1,6 +1,22 @@
 const routes = [
-  { path: '/', component: Home },
-  { path: '/login', component: Login }
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
+    beforeEnter: (to, from, next) => {
+      let basicAuth = localStorage.getItem('basic_auth')
+      if (!basicAuth) {
+        next({ path: '/login' })
+      } else {
+        next()
+      }
+    }
+  }
 ]
 
 const router = new VueRouter({
