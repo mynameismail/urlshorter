@@ -51,10 +51,11 @@ app.get('/api/urls', basicAuth, controllers.list)
 app.post('/api/urls', basicAuth, controllers.store)
 app.put('/api/urls/:id', basicAuth, controllers.update)
 app.delete('/api/urls/:id', basicAuth, controllers.delete)
-app.get('/v/:id', controllers.visit)
 
 app.use(express.static(path.resolve(__dirname + '/ui')))
 app.get(['/app', '/app/*'], (req, res) => res.sendFile(path.resolve(__dirname + '/ui/app.html')))
+
+app.get('/:short', controllers.visit)
 
 // server
 var server = http.createServer(app)
