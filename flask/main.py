@@ -3,7 +3,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, request, redirect
 from functools import wraps
-from models import db, Url
+from models import db, Url, id_to_short, short_to_id
 
 env_path = Path(os.path.dirname(__file__) + '/../.env').resolve()
 load_dotenv(dotenv_path=env_path)
@@ -19,7 +19,10 @@ with app.app_context():
     db.create_all()
     urls = Url.query.all()
     if len(urls) == 0:
-        db.session.add(Url(name='Urlshorter GitHub', real_url='https://github.com/mynameismail/urlshorter'))
+        new_url = Url(name='Urlshorter GitHub', real_url='https://github.com/mynameismail/urlshorter')
+        db.session.add(new_url)
+        db.session.flush()
+        new_url.short_id = id_to_short(new_url.id)
         db.session.commit()
 
 def basic_auth(f):
@@ -69,6 +72,8 @@ def store_url():
     try:
         new_url = Url(name=name, real_url=real_url)
         db.session.add(new_url)
+        db.session.flush()
+        new_url.short_id = id_to_short(new_url.id)
         db.session.commit()
         return 'Success', 200
     except:
@@ -115,9 +120,15 @@ def delete_url(id):
 
     return 'Error', 500
 
-@app.route('/v/<int:id>', methods=['GET'])
-def visit_url(id):
+@app.route('/app', defaults={'path': ''}, methods=['GET'])
+@app.route('/app/<path:path>', methods=['GET'])
+def catch_all(path):
+    return app.send_static_file('app.html')
+
+@app.route('/<short>', methods=['GET'])
+def visit_url(short):
     try:
+        id = short_to_id(short)
         url = Url.query.get(id)
         if url:
             url.visited = url.visited + 1
@@ -129,11 +140,6 @@ def visit_url(id):
         pass
 
     return 'Error', 500
-
-@app.route('/app', defaults={'path': ''}, methods=['GET'])
-@app.route('/app/<path:path>', methods=['GET'])
-def catch_all(path):
-    return app.send_static_file('app.html')
 
 if __name__ == '__main__':
     app.run()
