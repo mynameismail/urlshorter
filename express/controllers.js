@@ -1,4 +1,4 @@
-var { Url } = require('./models')
+var { Url, idToShort, shortToId } = require('./models')
 
 let controllers = {}
 
@@ -35,10 +35,12 @@ controllers.store = async (req, res) => {
     }
 
     try {
-        let success = await Url.create({
+        let new_url = await Url.create({
             name: name,
             real_url: real_url
         })
+        new_url.short_id = idToShort(new_url.id)
+        let success = await new_url.save()
         if (success) {
             return res.status(200).send('Success')
         }
@@ -100,12 +102,9 @@ controllers.delete = async (req, res) => {
 }
 
 controllers.visit = async (req, res) => {
-    let id = req.params.id
-    if (!parseInt(id)) {
-        return res.status(400).send('Bad request')
-    }
-
     try {
+        let short = req.params.short
+        let id = shortToId(short)
         let url = await Url.findOne({ where: { id: id } })
         if (url) {
             url.visited = url.visited + 1
