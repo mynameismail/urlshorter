@@ -11,6 +11,7 @@ var bodyParser = require('body-parser')
 var compression = require('compression')
 var cors = require('cors')
 var helmet = require('helmet')
+var morgan = require('morgan')
 
 var app = express()
 
@@ -28,6 +29,9 @@ app.use(cors())
 
 // helmet
 app.use(helmet())
+
+// morgan
+app.use(morgan('dev'))
 
 // middlewares
 const basicAuth = (req, res, next) => {
