@@ -4,88 +4,163 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Urlshorter</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-  <link rel="stylesheet" href="/app.css">
+  <!-- UIkit CSS -->
+  <link rel="stylesheet" href="/static/uikit/css/uikit.min.css">
+  <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
-  <div id="app">
+  <div id="app" class="uk-padding uk-text-light">
     <router-view></router-view>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- UIkit JS -->
+  <script src="/static/uikit/js/uikit.min.js"></script>
+  <script src="/static/uikit/js/uikit-icons.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 
   <script type="text/x-template" id="login-page">
     <div id="login">
-      <h4 class="center-align">Login</h4>
-      <form @submit.prevent="doLogin">
-        <div class="input-field">
-          <input
-            id="username"
-            type="text"
-            v-model="username">
-          <label for="username">Username</label>
-        </div>
-        <div class="input-field">
-          <input
-            id="password"
-            type="password"
-            v-model="password">
-          <label for="password">Password</label>
-        </div>
-        <div class="row">
-          <div class="col s8">
-            <div
-              class="message-text"
-              :class="message.type == 'error' ? 'red-text darken-1' : 'green-text darken-1'"
-              v-if="message.text"
-            >{{ message.text }}</div>
-          </div>
-          <div class="col s4 right-align">
-            <button class="btn waves-effect waves-light" type="submit">
-              Login
-            </button>
+      <h1>Login</h1>
+      <div class="uk-margin-bottom" :class="message.type == 'error' ? 'uk-alert-danger' : 'uk-alert-success'" v-if="message.text" uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <p>{{ message.text }}</p>
+      </div>
+      <form class="uk-form-stacked" @submit.prevent="doLogin">
+        <div class="uk-margin">
+          <label class="uk-form-label" for="input-username">Text</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="input-username" type="text" v-model="username" placeholder="Username" required>
           </div>
         </div>
+        <div class="uk-margin">
+          <label class="uk-form-label" for="input-password">Password</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="input-password" type="password" v-model="password" placeholder="Password" required>
+          </div>
+        </div>
+        <p class="uk-text-right">
+          <button class="uk-button uk-button-primary" type="submit">Login</button>
+        </p>
       </form>
     </div>
   </script>
-  <script type="text/javascript" src="/login.js"></script>
+  <script type="text/javascript" src="/static/login.js"></script>
 
   <script type="text/x-template" id="home-page">
     <div id="home">
-      <h4 class="center-align">Urlshorter</h4>
-      <div class="input-field">
-        <input
-          id="search"
-          type="text"
-          v-model="search"
-          @keyup="doSearch">
-        <label for="search">Search</label>
+      <h1>Dashboard</h1>
+      <div class="uk-margin-bottom" :class="message.type == 'error' ? 'uk-alert-danger' : 'uk-alert-success'" v-if="message.text" uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <p>{{ message.text }}</p>
       </div>
-      <div
-        class="message-text"
-        :class="message.type == 'error' ? 'red-text darken-1' : 'green-text darken-1'"
-        v-if="message.text"
-      >{{ message.text }}</div>
-      <ul class="collapsible expandable">
-        <li v-for="url in filteredUrls" :key="url.id">
-          <div class="collapsible-header">
-            {{ url.name }}
-            <span class="badge" data-badge-caption="hits"><b>{{ url.visited }}</b></span>
-          </div>
-          <div class="collapsible-body">
-            <div><b>Real URL</b></div>
-            <div><a :href="'/' + url.short_id" target="_blank">{{ url.real_url }}</a></div>
-          </div>
-        </li>
-      </ul>
+      <div uk-grid>
+        <form class="uk-search uk-search-default uk-width-expand" @submit.prevent="doSearch">
+          <button type="submit" class="uk-search-icon-flip" uk-search-icon></button>
+          <input class="uk-search-input" type="search" placeholder="Search" v-model="search">
+        </form>
+        <button class="uk-button uk-button-default uk-width-auto uk-margin-small-left" type="button" @click="fetchUrls">Reload</button>
+        <button class="uk-button uk-button-default uk-width-auto uk-margin-small-left" type="button" uk-toggle="target: #modal-new">New</button>
+      </div>
+      <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-small uk-table-divider uk-margin-medium-top">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Url</th>
+              <th>Hits</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="url in filteredUrls" :key="url.id">
+              <td>{{ url.name }}</td>
+              <td>
+                <ul class="uk-list uk-link-text">
+                  <li><strong>Real URL:</strong> <a :href="url.real_url" target="_blank">{{ url.real_url }}</a></li>
+                  <li>
+                    <strong>Short URL:</strong> <a :href="baseUrl + url.short_id" target="_blank">{{ baseUrl + url.short_id }}</a>
+                    <a href="#" uk-icon="icon: copy" uk-tooltip="Copy"></a>
+                  </li>
+                </ul>
+              </td>
+              <td>{{ url.visited }}</td>
+              <td>
+                <ul class="uk-iconnav">
+                  <li><a href="#modal-edit" uk-icon="icon: pencil" uk-toggle uk-tooltip="Edit" @click="setActionData(url)"></a></li>
+                  <li><a href="#modal-delete" uk-icon="icon: trash" uk-toggle uk-tooltip="Delete" @click="setActionData(url)"></a></li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Modals -->
+      <div id="modal-new" class="uk-text-light" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+          <h2 class="uk-modal-title">New</h2>
+          <form class="uk-form-stacked" @submit.prevent="doStore">
+            <div class="uk-margin">
+              <label class="uk-form-label" for="input-name">Text</label>
+              <div class="uk-form-controls">
+                <input class="uk-input" id="input-name" type="text" v-model="actionData.name" placeholder="URL name" required>
+              </div>
+            </div>
+            <div class="uk-margin">
+              <label class="uk-form-label" for="input-real-url">Real URL</label>
+              <div class="uk-form-controls">
+                <input class="uk-input" id="input-real-url" type="text" v-model="actionData.realUrl" placeholder="Real URL" required>
+              </div>
+            </div>
+            <p class="uk-text-right">
+              <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+              <button class="uk-button uk-button-primary" type="submit">Submit</button>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <div id="modal-edit" class="uk-text-light" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+          <h2 class="uk-modal-title">Edit</h2>
+          <form class="uk-form-stacked" @submit.prevent="doUpdate">
+            <div class="uk-margin">
+              <label class="uk-form-label" for="input-name">Text</label>
+              <div class="uk-form-controls">
+                <input class="uk-input" id="input-name" type="text" v-model="actionData.name" placeholder="URL name" required>
+              </div>
+            </div>
+            <div class="uk-margin">
+              <label class="uk-form-label" for="input-real-url">Real URL</label>
+              <div class="uk-form-controls">
+                <input class="uk-input" id="input-real-url" type="text" v-model="actionData.realUrl" placeholder="Real URL" required>
+              </div>
+            </div>
+            <p class="uk-text-right">
+              <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+              <button class="uk-button uk-button-primary" type="submit">Save</button>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <div id="modal-delete" class="uk-text-light" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+          <h2 class="uk-modal-title">Delete</h2>
+          <p><strong>{{ actionData.name }}</strong><br>{{ actionData.realUrl }}</p>
+          <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-danger" type="button" @click="doDelete">Delete</button>
+          </p>
+        </div>
+      </div>
+
     </div>
   </script>
-  <script type="text/javascript" src="/home.js"></script>
+  <script type="text/javascript" src="/static/home.js"></script>
 
-  <script type="text/javascript" src="/app.js"></script>
+  <script type="text/javascript" src="/static/app.js"></script>
 </body>
 </html>
