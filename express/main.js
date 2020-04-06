@@ -33,6 +33,12 @@ app.use(helmet())
 // morgan
 app.use(morgan('dev'))
 
+// error handler
+app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    res.status(500).send('Something wrong!')
+})
+
 // middlewares
 const basicAuth = (req, res, next) => {
     const regexBasicAuth = /^Basic\s/
@@ -56,10 +62,16 @@ app.post('/api/urls', basicAuth, controllers.store)
 app.put('/api/urls/:id', basicAuth, controllers.update)
 app.delete('/api/urls/:id', basicAuth, controllers.delete)
 
-app.use(express.static(path.resolve(__dirname + '/ui')))
+app.use('/static', express.static(path.resolve(__dirname + '/ui/static')))
 app.get(['/app', '/app/*'], (req, res) => res.sendFile(path.resolve(__dirname + '/ui/app.html')))
 
 app.get('/:short', controllers.visit)
+
+// 404 handler
+app.use((req, res, next) => {
+    console.log(req.path)
+    res.status(404).send(`Sorry can't find that!`)
+})
 
 // server
 var server = http.createServer(app)
