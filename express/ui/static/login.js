@@ -32,7 +32,12 @@ const Login = {
           this.message.text = ''
         }, 15000)
       } else {
-        this.message = 'Something error'
+        this.message.text = 'Something error'
+        this.message.type = 'error'
+        setTimeout(() => {
+          this.message.type = ''
+          this.message.text = ''
+        }, 15000)
       }
     }
   }
