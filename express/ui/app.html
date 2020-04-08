@@ -22,11 +22,7 @@
 
   <script type="text/x-template" id="login-page">
     <div id="login">
-      <h1>Login</h1>
-      <div class="uk-margin-bottom" :class="message.type == 'error' ? 'uk-alert-danger' : 'uk-alert-success'" v-if="message.text" uk-alert>
-        <a class="uk-alert-close" uk-close></a>
-        <p>{{ message.text }}</p>
-      </div>
+      <h3>Login</h3>
       <form class="uk-form-stacked" @submit.prevent="doLogin">
         <div class="uk-margin">
           <label class="uk-form-label" for="input-username">Text</label>
@@ -50,42 +46,40 @@
 
   <script type="text/x-template" id="home-page">
     <div id="home">
-      <h1>Dashboard</h1>
-      <div class="uk-margin-bottom" :class="message.type == 'error' ? 'uk-alert-danger' : 'uk-alert-success'" v-if="message.text" uk-alert>
-        <a class="uk-alert-close" uk-close></a>
-        <p>{{ message.text }}</p>
-      </div>
-      <div uk-grid>
-        <form class="uk-search uk-search-default uk-width-expand" @submit.prevent="doSearch">
-          <button type="submit" class="uk-search-icon-flip" uk-search-icon></button>
-          <input class="uk-search-input" type="search" placeholder="Search" v-model="search">
+      <h5 class="uk-text-right uk-text-light">Hello, admin | <a class="uk-link-text" href="javascript:void(0);" @click="logout">Logout</a></h5>
+      <div class="uk-grid-small" uk-grid>
+        <form class="uk-width-expand" @submit.prevent="doSearch">
+          <div class="uk-inline uk-width-1-1">
+            <button type="submit" class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></button>
+            <input class="uk-input" type="text" placeholder="Search" v-model="search">
+          </div>
         </form>
-        <button class="uk-button uk-button-default uk-width-auto uk-margin-small-left" type="button" @click="fetchUrls">Reload</button>
-        <button class="uk-button uk-button-default uk-width-auto uk-margin-small-left" type="button" uk-toggle="target: #modal-new">New</button>
+        <div class="uk-width-auto">
+          <button class="uk-button uk-button-default" type="button" @click="fetchUrls">Reload</button>
+          <button class="uk-button uk-button-default" type="button" uk-toggle="target: #modal-new">New</button>
+        </div>
       </div>
-      <div class="uk-overflow-auto">
-        <table class="uk-table uk-table-small uk-table-divider uk-margin-medium-top">
+      <div class="uk-overflow-auto uk-margin-medium-top">
+        <table class="uk-table uk-table-small uk-table-divider">
           <thead>
             <tr>
               <th>Name</th>
               <th>Url</th>
-              <th>Hits</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="url in filteredUrls" :key="url.id">
-              <td>{{ url.name }}</td>
+              <td>{{ url.name }}<br><span class="uk-text-small uk-text-muted">{{ url.visited }} hits</span></td>
               <td>
                 <ul class="uk-list uk-link-text">
-                  <li><strong>Real URL:</strong> <a :href="url.real_url" target="_blank">{{ url.real_url }}</a></li>
+                  <li><span class="uk-text-normal">Real URL:</span> <a :href="url.real_url" target="_blank">{{ url.real_url }}</a></li>
                   <li>
-                    <strong>Short URL:</strong> <a :href="baseUrl + url.short_id" target="_blank">{{ baseUrl + url.short_id }}</a>
-                    <a href="#" uk-icon="icon: copy" uk-tooltip="Copy"></a>
+                    <span class="uk-text-normal">Short URL:</span> <a :href="baseUrl + url.short_id" target="_blank">{{ baseUrl + url.short_id }}</a>
+                    <a href="javascript:void(0);" uk-icon="icon: copy" uk-tooltip="Copy" @click="copyShortUrl(baseUrl + url.short_id)"></a>
                   </li>
                 </ul>
               </td>
-              <td>{{ url.visited }}</td>
               <td>
                 <ul class="uk-iconnav">
                   <li><a href="#modal-edit" uk-icon="icon: pencil" uk-toggle uk-tooltip="Edit" @click="setActionData(url)"></a></li>
@@ -127,15 +121,15 @@
           <h2 class="uk-modal-title">Edit</h2>
           <form class="uk-form-stacked" @submit.prevent="doUpdate">
             <div class="uk-margin">
-              <label class="uk-form-label" for="input-name">Text</label>
+              <label class="uk-form-label" for="edit-name">Text</label>
               <div class="uk-form-controls">
-                <input class="uk-input" id="input-name" type="text" v-model="actionData.name" placeholder="URL name" required>
+                <input class="uk-input" id="edit-name" type="text" v-model="actionData.name" placeholder="URL name" required>
               </div>
             </div>
             <div class="uk-margin">
-              <label class="uk-form-label" for="input-real-url">Real URL</label>
+              <label class="uk-form-label" for="edit-real-url">Real URL</label>
               <div class="uk-form-controls">
-                <input class="uk-input" id="input-real-url" type="text" v-model="actionData.realUrl" placeholder="Real URL" required>
+                <input class="uk-input" id="edit-real-url" type="text" v-model="actionData.realUrl" placeholder="Real URL" required>
               </div>
             </div>
             <p class="uk-text-right">
