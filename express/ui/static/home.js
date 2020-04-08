@@ -1,10 +1,6 @@
 const Home = {
   template: '#home-page',
   data: () => ({
-    message: {
-      type: '',
-      text: ''
-    },
     search: '',
     urls: [],
     filteredUrls: [],
@@ -31,16 +27,25 @@ const Home = {
       if (response.status == 200) {
         let data = await response.json()
         this.urls = data.data
-        this.filteredUrls = data.data
+        this.doSearch()
       } else if (response.status == 401) {
         this.$router.push('/login')
       } else {
-        this.message.type = 'error'
-        this.message.text = 'Something error'
+        UIkit.notification({
+          message: `<span class="uk-text-light">Something error</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       }
     },
     doSearch: function() {
-      this.filteredUrls = this.urls.filter(url => url.name.includes(this.search) || url.real_url.includes(this.search))
+      this.filteredUrls = this.urls.filter(url => {
+        let lowerSearch = this.search.toLowerCase()
+        let lowerUrlName = url.name.toLowerCase()
+        let lowerRealUrl = url.real_url.toLowerCase()
+        return lowerUrlName.includes(lowerSearch) || lowerRealUrl.includes(lowerSearch)
+      })
     },
     resetActionData: function() {
       this.actionData.id = ''
@@ -70,15 +75,16 @@ const Home = {
       if (response.status == 200) {
         this.resetActionData()
         UIkit.modal('#modal-new').hide()
+        this.fetchUrls()
       } else if (response.status == 401) {
         this.$router.push('/login')
       } else {
-        this.message.type = 'error'
-        this.message.text = 'Something error'
-        setTimeout(() => {
-          this.message.type = ''
-          this.message.text = ''
-        }, 15000)
+        UIkit.notification({
+          message: `<span class="uk-text-light">Something error</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       }
     },
     doUpdate: async function() {
@@ -98,15 +104,16 @@ const Home = {
       if (response.status == 200) {
         this.resetActionData()
         UIkit.modal('#modal-edit').hide()
+        this.fetchUrls()
       } else if (response.status == 401) {
         this.$router.push('/login')
       } else {
-        this.message.type = 'error'
-        this.message.text = 'Something error'
-        setTimeout(() => {
-          this.message.type = ''
-          this.message.text = ''
-        }, 15000)
+        UIkit.notification({
+          message: `<span class="uk-text-light">Something error</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       }
     },
     doDelete: async function() {
@@ -122,19 +129,36 @@ const Home = {
       if (response.status == 200) {
         this.resetActionData()
         UIkit.modal('#modal-delete').hide()
+        this.fetchUrls()
       } else if (response.status == 401) {
         this.$router.push('/login')
       } else {
-        this.message.type = 'error'
-        this.message.text = 'Something error'
-        setTimeout(() => {
-          this.message.type = ''
-          this.message.text = ''
-        }, 15000)
+        UIkit.notification({
+          message: `<span class="uk-text-light">Something error</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       }
     },
-    copyShortUrl: function(shortUrl) {
-      console.log(shortUrl)
+    copyShortUrl: function(url) {
+      let shortUrl = document.createElement('textarea')
+      shortUrl.value = url
+      document.body.appendChild(shortUrl)
+      shortUrl.select()
+      shortUrl.setSelectionRange(0, 99999)
+      document.execCommand('copy')
+      document.body.removeChild(shortUrl)
+
+      UIkit.notification({
+        message: `<span class="uk-text-light">Short url copied</span>`,
+        pos: 'bottom-center',
+        timeout: 3000
+      })
+    },
+    logout: function() {
+      localStorage.removeItem('basic_auth')
+      this.$router.push('/login')
     }
   },
   mounted() {

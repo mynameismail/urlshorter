@@ -1,10 +1,6 @@
 const Login = {
   template: '#login-page',
   data: () => ({
-    message: {
-      type: '',
-      text: ''
-    },
     username: '',
     password: ''
   }),
@@ -25,19 +21,19 @@ const Login = {
         localStorage.setItem('basic_auth', basicAuth)
         this.$router.push('/')
       } else if (response.status == 401) {
-        this.message.text = 'Wrong login'
-        this.message.type = 'error'
-        setTimeout(() => {
-          this.message.type = ''
-          this.message.text = ''
-        }, 15000)
+        UIkit.notification({
+          message: `<span class="uk-text-light">Wrong login</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       } else {
-        this.message.text = 'Something error'
-        this.message.type = 'error'
-        setTimeout(() => {
-          this.message.type = ''
-          this.message.text = ''
-        }, 15000)
+        UIkit.notification({
+          message: `<span class="uk-text-light">Something error</span>`,
+          status: 'danger',
+          pos: 'bottom-center',
+          timeout: 3000
+        })
       }
     }
   }
