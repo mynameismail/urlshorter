@@ -39,7 +39,7 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something wrong!')
 })
 
-// middlewares
+// basic auth middleware
 const basicAuth = (req, res, next) => {
     const regexBasicAuth = /^Basic\s/
     let authorization = req.headers.authorization || ''
@@ -62,14 +62,14 @@ app.post('/api/urls', basicAuth, controllers.store)
 app.put('/api/urls/:id', basicAuth, controllers.update)
 app.delete('/api/urls/:id', basicAuth, controllers.delete)
 
-app.use('/static', express.static(path.resolve(__dirname + '/ui/static')))
-app.get(['/app', '/app/*'], (req, res) => res.sendFile(path.resolve(__dirname + '/ui/app.html')))
+let uiPath = path.resolve(__dirname + '/../ui')
+app.use('/static', express.static(uiPath + '/static'))
+app.get(['/app', '/app/*'], (req, res) => res.sendFile(uiPath + '/app.html'))
 
 app.get('/:short', controllers.visit)
 
 // 404 handler
 app.use((req, res, next) => {
-    console.log(req.path)
     res.status(404).send(`Sorry can't find that!`)
 })
 
