@@ -1,14 +1,16 @@
 import os, re
 from pathlib import Path
 from dotenv import load_dotenv
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, send_from_directory
 from functools import wraps
 from models import db, Url, id_to_short, short_to_id
 
 env_path = Path(os.path.dirname(__file__) + '/../.env').resolve()
 load_dotenv(dotenv_path=env_path)
 
-app = Flask(__name__, static_folder='ui', static_url_path='/')
+ui_path = Path(os.path.dirname(__file__) + '/../ui').resolve()
+
+app = Flask(__name__, static_folder=str(ui_path) + '/static', static_url_path='/static')
 sqlite_path = Path(os.path.dirname(__file__) + '/../urlshorter.db').resolve()
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -25,6 +27,13 @@ with app.app_context():
         new_url.short_id = id_to_short(new_url.id)
         db.session.commit()
 
+# error handler
+@app.errorhandler(500)
+def server_error(e):
+    print(e)
+    return 'Something wrong!', 500
+
+# basic auth decorator
 def basic_auth(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -120,10 +129,10 @@ def delete_url(id):
 
     return 'Error', 500
 
-@app.route('/app', defaults={'path': ''}, methods=['GET'])
+@app.route('/app/', defaults={'path': ''}, methods=['GET'])
 @app.route('/app/<path:path>', methods=['GET'])
 def catch_all(path):
-    return app.send_static_file('app.html')
+    return send_from_directory(ui_path, 'app.html')
 
 @app.route('/<short>', methods=['GET'])
 def visit_url(short):
@@ -140,6 +149,11 @@ def visit_url(short):
         pass
 
     return 'Error', 500
+
+# 404 handler
+@app.errorhandler(404)
+def not_found(e):
+    return "Sorry can't find that!", 404
 
 if __name__ == '__main__':
     app.run()
