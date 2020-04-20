@@ -9,7 +9,7 @@ const routes = [
     name: 'home',
     component: Home,
     beforeEnter: (to, from, next) => {
-      let basicAuth = localStorage.getItem('basic_auth')
+      let basicAuth = localStorage.getItem('basic-auth')
       if (!basicAuth) {
         next({ path: '/login' })
       } else {

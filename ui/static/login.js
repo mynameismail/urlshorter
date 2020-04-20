@@ -16,9 +16,10 @@ const Login = {
           'password': this.password
         })
       })
+      
       if (response.status == 200) {
         let basicAuth = btoa(`${this.username}:${this.password}`)
-        localStorage.setItem('basic_auth', basicAuth)
+        localStorage.setItem('basic-auth', basicAuth)
         this.$router.push('/')
       } else if (response.status == 401) {
         UIkit.notification({

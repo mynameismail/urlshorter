@@ -17,7 +17,7 @@ const Home = {
   },
   methods: {
     fetchUrls: async function() {
-      let basicAuth = localStorage.getItem('basic_auth')
+      let basicAuth = localStorage.getItem('basic-auth')
       let response = await fetch('/api/urls', {
         headers: {
           'Authorization': `Basic ${basicAuth}`
@@ -59,7 +59,7 @@ const Home = {
       this.actionData.realUrl = url.real_url
     },
     doStore: async function() {
-      let basicAuth = localStorage.getItem('basic_auth')
+      let basicAuth = localStorage.getItem('basic-auth')
       let response = await fetch('/api/urls', {
         method: 'POST',
         headers: {
@@ -88,7 +88,7 @@ const Home = {
       }
     },
     doUpdate: async function() {
-      let basicAuth = localStorage.getItem('basic_auth')
+      let basicAuth = localStorage.getItem('basic-auth')
       let response = await fetch('/api/urls/' + this.actionData.id, {
         method: 'PUT',
         headers: {
@@ -117,7 +117,7 @@ const Home = {
       }
     },
     doDelete: async function() {
-      let basicAuth = localStorage.getItem('basic_auth')
+      let basicAuth = localStorage.getItem('basic-auth')
       let response = await fetch('/api/urls/' + this.actionData.id, {
         method: 'DELETE',
         headers: {
@@ -157,7 +157,7 @@ const Home = {
       })
     },
     logout: function() {
-      localStorage.removeItem('basic_auth')
+      localStorage.removeItem('basic-auth')
       this.$router.push('/login')
     }
   },
