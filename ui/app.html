@@ -9,58 +9,48 @@
   <link rel="stylesheet" href="/static/uikit/css/uikit.min.css">
 </head>
 <body>
-  <div id="app" class="uk-padding uk-text-light">
-    <router-view></router-view>
+  <div id="app" class="uk-section">
+    <div class="uk-container">
+      <router-view></router-view>
+    </div>
   </div>
-
-  <!-- UIkit JS -->
-  <script src="/static/uikit/js/uikit.min.js"></script>
-  <script src="/static/uikit/js/uikit-icons.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 
   <script type="text/x-template" id="login-page">
     <div id="login">
-      <h3>Login</h3>
-      <form class="uk-form-stacked" @submit.prevent="doLogin">
+      <h3 class="uk-text-center">Login</h3>
+      <form @submit.prevent="doLogin">
         <div class="uk-margin">
-          <label class="uk-form-label" for="input-username">Text</label>
-          <div class="uk-form-controls">
-            <input class="uk-input" id="input-username" type="text" v-model="username" placeholder="Username" required>
-          </div>
+          <input class="uk-input" id="input-username" type="text" v-model="username" placeholder="Username" required>
         </div>
         <div class="uk-margin">
-          <label class="uk-form-label" for="input-password">Password</label>
-          <div class="uk-form-controls">
-            <input class="uk-input" id="input-password" type="password" v-model="password" placeholder="Password" required>
-          </div>
+          <input class="uk-input" id="input-password" type="password" v-model="password" placeholder="Password" required>
         </div>
-        <p class="uk-text-right">
-          <button class="uk-button uk-button-primary" type="submit">Login</button>
-        </p>
+        <div class="uk-margin">
+          <button class="uk-button uk-button-primary uk-width-1-1" type="submit">Login</button>
+        </div>
       </form>
     </div>
   </script>
-  <script type="text/javascript" src="/static/login.js"></script>
 
   <script type="text/x-template" id="home-page">
     <div id="home">
-      <h5 class="uk-text-right uk-text-light">Hello, admin | <a class="uk-link-text" href="javascript:void(0);" @click="logout">Logout</a></h5>
+      <div class="uk-margin">Hello, admin | <a class="uk-link-text" href="javascript:void(0);" @click="logout">Logout</a></div>
       <div class="uk-grid-small" uk-grid>
-        <form class="uk-width-expand" @submit.prevent="doSearch">
-          <div class="uk-inline uk-width-1-1">
-            <button type="submit" class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></button>
-            <input class="uk-input" type="text" placeholder="Search" v-model="search">
-          </div>
-        </form>
+        <div class="uk-width-expand">
+          <form @submit.prevent="doSearch">
+            <div class="uk-inline uk-width-1-1">
+              <button type="submit" class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></button>
+              <input class="uk-input" type="text" placeholder="Search" v-model="search">
+            </div>
+          </form>
+        </div>
         <div class="uk-width-auto">
           <button class="uk-button uk-button-default" type="button" @click="fetchUrls">Reload</button>
           <button class="uk-button uk-button-default" type="button" uk-toggle="target: #modal-new">New</button>
         </div>
       </div>
       <div class="uk-overflow-auto uk-margin-medium-top">
-        <table class="uk-table uk-table-small uk-table-divider">
+        <table class="uk-table uk-table-small uk-table-middle uk-table-divider">
           <thead>
             <tr>
               <th>Name</th>
@@ -73,9 +63,9 @@
               <td>{{ url.name }}<br><span class="uk-text-small uk-text-muted">{{ url.visited }} hits</span></td>
               <td>
                 <ul class="uk-list uk-link-text">
-                  <li><span class="uk-text-normal">Real URL:</span> <a :href="url.real_url" target="_blank">{{ url.real_url }}</a></li>
+                  <li><span class="uk-text-bold">Real URL:</span> <a :href="url.real_url" target="_blank">{{ url.real_url }}</a></li>
                   <li>
-                    <span class="uk-text-normal">Short URL:</span> <a :href="baseUrl + url.short_id" target="_blank">{{ baseUrl + url.short_id }}</a>
+                    <span class="uk-text-bold">Short URL:</span> <a :href="baseUrl + url.short_id" target="_blank">{{ baseUrl + url.short_id }}</a>
                     <a href="javascript:void(0);" uk-icon="icon: copy" uk-tooltip="Copy" @click="copyShortUrl(baseUrl + url.short_id)"></a>
                   </li>
                 </ul>
@@ -92,12 +82,12 @@
       </div>
       
       <!-- Modals -->
-      <div id="modal-new" class="uk-text-light" uk-modal>
+      <div id="modal-new" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
           <h2 class="uk-modal-title">New</h2>
           <form class="uk-form-stacked" @submit.prevent="doStore">
             <div class="uk-margin">
-              <label class="uk-form-label" for="input-name">Text</label>
+              <label class="uk-form-label" for="input-name">URL name</label>
               <div class="uk-form-controls">
                 <input class="uk-input" id="input-name" type="text" v-model="actionData.name" placeholder="URL name" required>
               </div>
@@ -116,12 +106,12 @@
         </div>
       </div>
 
-      <div id="modal-edit" class="uk-text-light" uk-modal>
+      <div id="modal-edit" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
           <h2 class="uk-modal-title">Edit</h2>
           <form class="uk-form-stacked" @submit.prevent="doUpdate">
             <div class="uk-margin">
-              <label class="uk-form-label" for="edit-name">Text</label>
+              <label class="uk-form-label" for="edit-name">URL name</label>
               <div class="uk-form-controls">
                 <input class="uk-input" id="edit-name" type="text" v-model="actionData.name" placeholder="URL name" required>
               </div>
@@ -140,10 +130,10 @@
         </div>
       </div>
 
-      <div id="modal-delete" class="uk-text-light" uk-modal>
+      <div id="modal-delete" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
           <h2 class="uk-modal-title">Delete</h2>
-          <p><strong>{{ actionData.name }}</strong><br>{{ actionData.realUrl }}</p>
+          <p><span class="uk-text-bold">{{ actionData.name }}</span><br>{{ actionData.realUrl }}</p>
           <p class="uk-text-right">
             <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
             <button class="uk-button uk-button-danger" type="button" @click="doDelete">Delete</button>
@@ -153,8 +143,18 @@
 
     </div>
   </script>
-  <script type="text/javascript" src="/static/home.js"></script>
+  
+  <!-- UIkit JS -->
+  <script src="/static/uikit/js/uikit.min.js"></script>
+  <script src="/static/uikit/js/uikit-icons.min.js"></script>
 
+  <!-- Vue and Vue Router -->
+  <script src="/static/vue.js"></script>
+  <script src="/static/vue-router.js"></script>
+
+  <!-- Vue app -->
+  <script type="text/javascript" src="/static/login.js"></script>
+  <script type="text/javascript" src="/static/home.js"></script>
   <script type="text/javascript" src="/static/app.js"></script>
 </body>
 </html>

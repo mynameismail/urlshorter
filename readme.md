@@ -5,7 +5,7 @@ Simple url shortener with backend options, express or flask, and frontend vue
 1. Clone the project ```git clone https://github.com/mynameismail/urlshorter.git```
 2. Change directory to the project ```cd urlshorter```
 3. Rename **.env.example** to **.env** ```mv .env.example .env```
-4. (Optional) Open **.env** with text editor, then change the value of **APP_USERNAME** and/or **APP_PASSWORD**
+4. (Optional) Open **.env** with text editor, then change the value of **ADMIN_USERNAME** and/or **ADMIN_PASSWORD**
 5. Install dependencies, follow the steps below
 
 ### If you want express as the backend
@@ -22,10 +22,12 @@ Simple url shortener with backend options, express or flask, and frontend vue
 
 ## Run in local
 ### Express
-Run ```node main.js```
+1. Run ```node main.js```
+2. Open browser and visit http://localhost:5000/app
 ### Flask
 1. Activate the environment ```source env/bin/activate```
 2. Run ```python main.py```
+3. Open browser and visit http://localhost:5000/app
 
 ## Deploy
 Maybe next time
