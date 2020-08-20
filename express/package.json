@@ -2,10 +2,14 @@
   "name": "urlshorter",
   "version": "1.0.0",
   "description": "backend for urlshorter",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "urlshorter",
+    "url shortener"
+  ],
   "author": "Ismail",
   "license": "ISC",
   "dependencies": {
@@ -14,9 +18,9 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "helmet": "^3.22.0",
+    "helmet": "^3.23.3",
     "morgan": "^1.10.0",
-    "sequelize": "^5.21.5",
-    "sqlite3": "^4.1.1"
+    "sequelize": "^5.22.3",
+    "sqlite3": "^4.2.0"
   }
 }
